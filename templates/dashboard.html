@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="shortcut icon" href="{% static 'css/logo.png' %}" type="image/x-icon">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <header class="bg-white shadow">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-user-shield"></i> Owner Dashboard
+            </div>
+            <div>
+                <a href="{% url 'admin:logout' %}" class="font-medium text-red-600 hover:text-red-500">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+        
+        {% if messages %}
+            <div class="space-y-2 mb-6">
+                {% for message in messages %}
+                    <div class="p-4 rounded-md text-center font-semibold
+                        {% if message.tags == 'success' %} bg-green-100 text-green-800 {% endif %}
+                        {% if message.tags == 'error' %} bg-red-100 text-red-800 {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <section>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-utensils"></i> Food Pre-Orders
+                </h2>
+                <div class="space-y-6">
+                    {% for order in orders %}
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">{{ order.customer_name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ order.phone_number }}</p>
+                                </div>
+                                <span class="text-lg font-semibold text-blue-600">₹{{ order.total_cost }}</span>
+                            </div>
+
+                            <div>
+                                <p><strong>Date:</strong> {{ order.order_date }} at {{ order.order_time|time:"g:i A" }}</p>
+                                
+                                <form action="{% url 'update_order_status' order.id %}" method="POST" class="flex items-center gap-2 mt-2">
+                                    {% csrf_token %}
+                                    <label for="status-order-{{order.id}}" class="font-bold">Status:</label>
+                                    <select name="new_status" id="status-order-{{order.id}}" class="border border-gray-300 rounded p-1 text-sm">
+                                        <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                        <option value="In Progress" {% if order.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                        <option value="Ready for Pickup" {% if order.status == 'Ready for Pickup' %}selected{% endif %}>Ready for Pickup</option>
+                                        <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                        <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 text-sm rounded hover:bg-blue-600">Update</button>
+                                </form>
+                                <div class="mt-4">
+                                    <h4 class="font-semibold mb-2">Ordered Items:</h4>
+                                    <ul class="list-disc list-inside text-gray-700">
+                                        {% for item in order.ordered_items %}
+                                            <li>{{ item.name }} x {{ item.quantity }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+
+                                {% if order.special_instructions %}
+                                <div class="mt-4 bg-gray-50 p-3 rounded">
+                                    <p><strong>Instructions:</strong> {{ order.special_instructions }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-gray-500">No food orders found.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-bed"></i> Room Bookings
+                </h2>
+                <div class="space-y-6">
+                    {% for booking in bookings %}
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">{{ booking.name }}</h3>
+                                    <p class="text-sm text-gray-500">{{ booking.phone }}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <form action="{% url 'update_booking_status' booking.id %}" method="POST" class="flex items-center gap-2 mb-2">
+                                    {% csrf_token %}
+                                    <label for="status-book-{{booking.id}}" class="font-bold">Status:</label>
+                                    <select name="new_status" id="status-book-{{booking.id}}" class="border border-gray-300 rounded p-1 text-sm">
+                                        <option value="Pending" {% if booking.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                        <option value="Confirmed" {% if booking.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                        <option value="Cancelled" {% if booking.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 text-sm rounded hover:bg-blue-600">Update</button>
+                                </form>
+                                <p><strong>Room:</strong> {{ booking.room_type|title }} ({{ booking.guests }} Guest{{ booking.guests|pluralize }})</p>
+                                <p><strong>Check-in:</strong> {{ booking.check_in }}</p>
+                                <p><strong>Check-out:</strong> {{ booking.check_out }}</p>
+                                
+                                {% if booking.requests %}
+                                <div class="mt-4 bg-gray-50 p-3 rounded">
+                                    <p><strong>Requests:</strong> {{ booking.requests }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-gray-500">No room bookings found.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </main>
+
+</body>
+</html>

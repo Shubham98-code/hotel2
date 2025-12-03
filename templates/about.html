@@ -1,0 +1,415 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About The Gupta Hotel - Luxury & Excellence</title>
+    <link rel="shortcut icon" href="/static/css/logo.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script type="module">
+        import { createIcons, Award, Users, MapPin, Heart } from 'https://cdn.skypack.dev/lucide@0.320.0';
+        // We will call createIcons in the main script block on load
+    </script>
+
+    <style>
+      /* Custom styles to match the original React/Tailwind/Motion theme */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #fff; /* Default background */
+      }
+      h1, h2, h3 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+      }
+      .hero-gradient {
+        background: linear-gradient(135deg, #2a2a2a, #1a1a1a, #3d2817);
+      }
+      /* Scroll Animation Setup */
+      /* --- Animations from home --- */
+      
+      /* Base styles for elements before animation (hidden/translated) */
+      .js-animate {
+          opacity: 0;
+      }
+      
+      /* Directional classes for animation start position */
+      .js-from-up { transform: translateY(40px); }
+      .js-from-down { transform: translateY(-40px); }
+      .js-from-left { transform: translateX(-40px); }
+      .js-from-right { transform: translateX(40px); }
+
+      /* Class added by Intersection Observer when in view */
+      .js-in-view {
+          transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                      opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 1;
+          transform: translate(0, 0);
+      }
+      
+      /* Global Hover/Tap effects from home */
+      .js-interactive {
+          transition: transform 0.3s ease-out, box-shadow 0.3s, background-color 0.3s, filter 0.3s;
+      }
+      
+      .card-hover-transform {
+           transition: transform 0.3s ease-out, box-shadow 0.3s, border-color 0.3s !important;
+      }
+
+      .js-interactive:hover {
+          transform: scale(1.05);
+      }
+      .js-interactive:active {
+          transform: scale(0.98);
+      }
+      
+      /* Custom hover lift effect for cards from home */
+      .card-hover-transform:hover {
+          transform: translateY(-8px) !important;
+          filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.08)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.15));
+      }
+       .card-hover-transform {
+          filter: drop-shadow(0 0px 0px transparent);
+      }
+      
+      /* --- End Animations from home --- */
+      
+      /* Base Container Setup */
+      .section-container {
+        position: relative;
+        z-index: 1; 
+      }
+
+      /* Hover Effect for general content blocks (Mission/Vision wrappers, Commitment, Footer) */
+      .content-block-hover {
+        /* Base transition for smooth scale and shadow */
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1; /* Default state for layering */
+        position: relative; /* Needed for z-index to work */
+      }
+      .content-block-hover:hover {
+        /* Apply a slight scale (pop effect) and enhance shadow */
+        transform: scale(1.02); 
+        box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 6px 8px -3px rgba(0, 0, 0, 0.1);
+        z-index: 10; /* Bring element forward slightly on hover */
+      }
+
+      /* Existing Card Hover (Smaller, for grid items: Achievements, Why Guests Love Us) */
+      .card-hover {
+        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+      }
+      .card-hover:hover {
+        /* This is the smaller, vertical lift effect */
+        transform: translateY(-8px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      }
+      .img-hover-scale {
+        transition: transform 0.3s ease-in-out;
+      }
+      .img-hover-scale:hover {
+        transform: scale(1.05);
+      }
+      
+      /* Keyframes for smooth mobile menu transition (Added from home) */
+      @keyframes slideInDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes slideOutUp {
+          from { opacity: 1; transform: translateY(0); }
+          to { opacity: 0; transform: translateY(-10px); }
+      }
+      .mobile-menu-enter { animation: slideInDown 0.2s ease-out forwards; }
+      .mobile-menu-exit { animation: slideOutUp 0.2s ease-in forwards; }
+    </style>
+
+  </head>
+  <body>
+    <div id="app" class="min-h-screen">
+      
+     <!-- Header and mobile menu will be injected here -->
+     {% include 'header.html' %}
+
+      <main>
+        
+        <section class="hero-gradient text-white py-20 md:py-32">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center js-animate js-from-up" style="transition-delay: 0s;">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 js-animate js-from-up" style="transition-delay: 0.1s;">About The Gupta Hotel</h1>
+            <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto js-animate js-from-up" style="transition-delay: 0.2s;">A Legacy of Luxury, Hospitality, and Culinary Excellence</p>
+          </div>
+        </section>
+
+        <section class="py-20 md:py-28 bg-white section-container">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
+              
+              <div class="js-animate js-from-left" style="transition-delay: 0s;">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
+                <p class="text-gray-600 mb-4 leading-relaxed">
+                  Founded in 2004, The Gupta Hotel has been a beacon of luxury hospitality in Jamshedpur. What began as a vision to create an exceptional dining and accommodation destination has evolved into one of the region's most prestigious establishments.
+                </p>
+                <p class="text-gray-600 mb-4 leading-relaxed">
+                  With over two decades of experience, we have consistently delivered world-class service, exquisite cuisine, and unforgettable experiences to our guests. Our commitment to excellence has earned us a reputation as the premier luxury hotel in the region.
+                </p>
+                <p class="text-gray-600 leading-relaxed">
+                  Today, The Gupta Hotel stands as a testament to quality, innovation, and the pursuit of perfection in every aspect of hospitality.
+                </p>
+              </div>
+
+              <div class="js-animate js-from-right" style="transition-delay: 0.2s;">
+                <div class="relative">
+                  <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=500&fit=crop" alt="Hotel Exterior" class="rounded-xl shadow-xl img-hover-scale" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+              <div class="js-card-animate" style="transition-delay: 0.1s;">
+                <div class="bg-gradient-to-br from-amber-50 to-white p-8 rounded-xl border border-amber-100 h-full content-block-hover card-hover-transform">
+                  <h3 class="text-2xl font-bold text-gray-900 mb-4">Our Mission</h3>
+                  <p class="text-gray-600 leading-relaxed">
+                    To provide unparalleled hospitality and culinary excellence, creating memorable experiences that exceed expectations and establish lasting relationships with our guests. We are dedicated to maintaining the highest standards of service, comfort, and quality in everything we do.
+                  </p>
+                </div>
+              </div>
+              <div class="js-card-animate" style="transition-delay: 0.2s;">
+                <div class="bg-gradient-to-br from-blue-50 to-white p-8 rounded-xl border border-blue-100 h-full content-block-hover card-hover-transform">
+                  <h3 class="text-2xl font-bold text-gray-900 mb-4">Our Vision</h3>
+                  <p class="text-gray-600 leading-relaxed">
+                    To be recognized as the most trusted and beloved luxury hotel destination in the region, known for our innovation, excellence, and unwavering commitment to guest satisfaction. We aspire to set new standards in hospitality while preserving the values that define us.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="js-animate js-from-up" style="transition-delay: 0.1s;">
+              <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Our Achievements</h2>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+              
+              <div class="js-card-animate" style="transition-delay: 0.2s;">
+                <div class="bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-amber-100 text-center hover:shadow-lg transition-shadow content-block-hover card-hover-transform">
+                    <div class="flex justify-center mb-4 transition-transform duration-300 hover:rotate-12 hover:scale-110">
+                        <div class="p-3 bg-amber-100 rounded-lg text-amber-600">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-amber-600 mb-2">20+</div>
+                    <p class="text-gray-600 font-medium">Years of Excellence</p>
+                </div>
+              </div>
+
+              <div class="js-card-animate" style="transition-delay: 0.3s;">
+                <div class="bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-amber-100 text-center hover:shadow-lg transition-shadow content-block-hover card-hover-transform">
+                    <div class="flex justify-center mb-4 transition-transform duration-300 hover:rotate-12 hover:scale-110">
+                        <div class="p-3 bg-amber-100 rounded-lg text-amber-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-amber-600 mb-2">50K+</div>
+                    <p class="text-gray-600 font-medium">Happy Guests</p>
+                </div>
+              </div>
+
+              <div class="js-card-animate" style="transition-delay: 0.4s;">
+                <div class="bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-amber-100 text-center hover:shadow-lg transition-shadow content-block-hover card-hover-transform">
+                    <div class="flex justify-center mb-4 transition-transform duration-300 hover:rotate-12 hover:scale-110">
+                        <div class="p-3 bg-amber-100 rounded-lg text-amber-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-amber-600 mb-2">1</div>
+                    <p class="text-gray-600 font-medium">Prime Location</p>
+                </div>
+              </div>
+              
+              <div class="js-card-animate" style="transition-delay: 0.5s;">
+                <div class="bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-amber-100 text-center hover:shadow-lg transition-shadow content-block-hover card-hover-transform">
+                    <div class="flex justify-center mb-4 transition-transform duration-300 hover:rotate-12 hover:scale-110">
+                        <div class="p-3 bg-amber-100 rounded-lg text-amber-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-amber-600 mb-2">5★</div>
+                    <p class="text-gray-600 font-medium">Guest Rating</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 md:py-28 bg-gray-50 section-container">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="js-animate js-from-up" style="transition-delay: 0s;">
+              <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Why Guests Love Us</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              
+              <div class="js-card-animate" style="transition-delay: 0.1s;">
+                <div class="bg-white p-8 rounded-xl border border-amber-100 hover:border-amber-300 hover:shadow-lg transition-all h-full content-block-hover card-hover-transform">
+                  <h3 class="text-xl font-bold text-gray-900 mb-3">Premium Accommodation</h3>
+                  <p class="text-gray-600">Elegantly designed rooms and suites with world-class amenities and stunning views.</p>
+                </div>
+              </div>
+              
+              <div class="js-card-animate" style="transition-delay: 0.2s;">
+                <div class="bg-white p-8 rounded-xl border border-amber-100 hover:border-amber-300 hover:shadow-lg transition-all h-full content-block-hover card-hover-transform">
+                  <h3 class="text-xl font-bold text-gray-900 mb-3">Culinary Excellence</h3>
+                  <p class="text-gray-600">Award-winning chefs crafting exquisite dishes using the finest local and international ingredients.</p>
+                </div>
+              </div>
+              
+              <div class="js-card-animate" style="transition-delay: 0.3s;">
+                <div class="bg-white p-8 rounded-xl border border-amber-100 hover:border-amber-300 hover:shadow-lg transition-all h-full content-block-hover card-hover-transform">
+                  <h3 class="text-xl font-bold text-gray-900 mb-3">Dedicated Service</h3>
+                  <p class="text-gray-600">Our passionate team goes above and beyond to ensure your comfort and satisfaction.</p>
+                </div>
+              </div>
+
+              <div class="js-card-animate" style="transition-delay: 0.4s;">
+                <div class="bg-white p-8 rounded-xl border border-amber-100 hover:border-amber-300 hover:shadow-lg transition-all h-full content-block-hover card-hover-transform">
+                  <h3 class="text-xl font-bold text-gray-900 mb-3">Prime Location</h3>
+                  <p class="text-gray-600">Strategically located in the heart of Jamshedpur with easy access to business and leisure destinations.</p>
+                </div>
+              </div>
+
+              <div class="js-card-animate" style="transition-delay: 0.5s;">
+                <div class="bg-white p-8 rounded-xl border border-amber-100 hover:border-amber-300 hover:shadow-lg transition-all h-full content-block-hover card-hover-transform">
+                  <h3 class="text-xl font-bold text-gray-900 mb-3">Modern Facilities</h3>
+                  <p class="text-gray-600">State-of-the-art facilities including meeting rooms, gymnasium, and recreational areas.</p>
+                </div>
+              </div>
+
+              <div class="js-card-animate" style="transition-delay: 0.6s;">
+                <div class="bg-white p-8 rounded-xl border border-amber-100 hover:border-amber-300 hover:shadow-lg transition-all h-full content-block-hover card-hover-transform">
+                  <h3 class="text-xl font-bold text-gray-900 mb-3">Personalized Experiences</h3>
+                  <p class="text-gray-600">Customized services tailored to meet your unique needs and preferences.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 md:py-28 bg-white section-container">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 content-block-hover">
+            <div class="js-animate js-from-up" style="transition-delay: 0s;">
+              <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Committed to Excellence</h2>
+            </div>
+            <div class="max-w-3xl mx-auto text-center">
+              <p class="text-lg text-gray-600 mb-6 leading-relaxed js-animate js-from-up" style="transition-delay: 0.1s;">
+                Our team of experienced professionals is dedicated to providing exceptional service and creating unforgettable experiences. From our expert chefs to our attentive staff, every member of The Gupta Hotel family is committed to excellence.
+              </p>
+              <p class="text-lg text-gray-600 leading-relaxed js-animate js-from-up" style="transition-delay: 0.2s;">
+                We believe that true hospitality comes from genuine care, attention to detail, and a passion for exceeding expectations. Every guest is treated like family, and every detail matters.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+      
+      <!-- Footer will be injected here -->
+      <div id="footer-placeholder"></div>
+
+    </div>
+    
+    <script>
+        /**
+         * Simple Intersection Observer to mimic Framer Motion's whileInView/initial/animate logic.
+         * Elements with 'data-animation' attribute will be observed.
+         */
+        function setupIntersectionObserver() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px', // Trigger when 50px of the element is visible
+                threshold: 0.1 
+            };
+            
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    const target = entry.target;
+                    
+                    if (entry.isIntersecting) {
+                        // The delay is applied via inline style for staggered effects
+                        const delay = parseFloat(target.style.transitionDelay || 0) * 1000;
+                        
+                        setTimeout(() => {
+                             // ONLY add the 'js-in-view' class.
+                            target.classList.add('js-in-view'); 
+                        }, delay);
+
+                        // Stop observing once animated
+                        observer.unobserve(target);
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all elements with .js-animate
+            // This will run on window.onload and find the injected elements
+            document.querySelectorAll('.js-animate').forEach(el => observer.observe(el));
+            
+            // Observe all card elements
+            document.querySelectorAll('.js-card-animate').forEach(el => {
+                el.classList.add('js-animate', 'js-from-up'); 
+                observer.observe(el);
+            });
+        }
+        
+        // Run setup once the window is loaded (ensures layout.js has run)
+        window.onload = function() {
+            setupIntersectionObserver();
+            
+            // Call createIcons from the module import
+            if (typeof createIcons === 'function') {
+                 createIcons({
+                    icons: {
+                        Award, Users, MapPin, Heart
+                    }
+                });
+            }
+
+            // --- Page-specific Hover Logic ---
+            // Note: .card-hover-transform (lift) is pure CSS
+            // This handles the .content-block-hover (scale)
+
+            document.querySelectorAll('.content-block-hover').forEach(block => {
+                block.addEventListener('mouseenter', () => {
+                    // Check if it's the parent of a card-hover-transform
+                    const cardParent = block.closest('.card-hover-transform');
+                    if (cardParent) {
+                        // If it's a card, let the CSS :hover handle it
+                        return;
+                    }
+                    // If it's a standalone block (like Mission/Vision), apply scale
+                    block.style.transform = 'scale(1.02)';
+                    block.style.boxShadow = '0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 6px 8px -3px rgba(0, 0, 0, 0.1)';
+                    block.style.zIndex = '10';
+                });
+                block.addEventListener('mouseleave', () => {
+                    const cardParent = block.closest('.card-hover-transform');
+                    if (cardParent) {
+                        return;
+                    }
+                    block.style.transform = 'scale(1)';
+                    block.style.boxShadow = 'none';
+                    block.style.zIndex = '1';
+                });
+            });
+
+            document.querySelectorAll('.img-hover-scale').forEach(img => {
+                img.addEventListener('mouseenter', () => img.style.transform = 'scale(1.05)');
+                img.addEventListener('mouseleave', () => img.style.transform = 'scale(1)');
+            });
+        };
+
+    </script>
+    
+    <!-- Shared layout script -->
+    <script src="{% static 'css/layout.js' %}" defer></script>
+  </body>
+</html>

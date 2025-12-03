@@ -1,0 +1,96 @@
+{% load static %}
+{% load socialaccount %} 
+
+<header id="main-header" class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-amber-100 js-animate js-from-down">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <a href="{% url 'home' %}" class="flex items-center gap-3 js-interactive">
+            <img src="{% static 'css/logo.png' %}" alt="The Gupta Hotel" class="h-12 w-12 object-contain">
+            <span class="text-2xl font-bold text-gray-900 hidden sm:inline">The Gupta Hotel</span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-8">
+            <a href="{% url 'home' %}" data-nav-link="home" class="text-gray-700 hover:text-amber-600 font-medium relative group js-interactive">Home
+                <div class="nav-underline absolute bottom-0 left-0 h-0.5 bg-amber-600 w-0 group-hover:w-full transition-all duration-300"></div>
+            </a>
+            <a href="{% url 'about' %}" data-nav-link="about" class="text-gray-700 hover:text-amber-600 font-medium relative group js-interactive">About
+                <div class="nav-underline absolute bottom-0 left-0 h-0.5 bg-amber-600 w-0 group-hover:w-full transition-all duration-300"></div>
+            </a>
+            <a href="{% url 'rooms' %}" data-nav-link="rooms" class="text-gray-700 hover:text-amber-600 font-medium relative group js-interactive">Rooms
+                <div class="nav-underline absolute bottom-0 left-0 h-0.5 bg-amber-600 w-0 group-hover:w-full transition-all duration-300"></div>
+            </a>
+            <a href="{% url 'contact' %}" data-nav-link="contact" class="text-gray-700 hover:text-amber-600 font-medium relative group js-interactive">Contact
+                <div class="nav-underline absolute bottom-0 left-0 h-0.5 bg-amber-600 w-0 group-hover:w-full transition-all duration-300"></div>
+            </a>
+            
+            <a href="{% url 'room_booking' %}" class="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 transition-colors font-semibold transition-transform duration-300 hover:scale-105">Book Now</a>
+            
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" title="Log Out" class="text-gray-700 hover:text-amber-600 font-medium relative group js-interactive">
+                    <span class="h-10 w-10 flex items-center justify-center rounded-full bg-amber-600 text-white font-bold text-lg border-2 border-amber-600 transition-colors overflow-hidden">
+                        
+                        {% if user.socialaccount_set.all %}
+                            <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="Profile" class="h-full w-full object-cover">
+                        {% else %}
+                            {% if user.first_name and user.last_name %}
+                                {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                            {% elif user.first_name %}
+                                {{ user.first_name|first|upper }}
+                            {% else %}
+                                <i class="fas fa-user"></i>
+                            {% endif %}
+                        {% endif %}
+                        </span>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 transition-colors font-semibold transition-transform duration-300 hover:scale-105">Login/signup</a>
+            {% endif %}
+            </div>
+
+        <button id="menu-toggle" class="md:hidden text-gray-700 hover:text-amber-600 js-interactive" aria-label="Toggle menu">
+            <svg id="menu-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h16"></path><path d="M4 18h16"></path><path d="M4 6h16"></path></svg>
+            <svg id="close-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </button>
+    </nav>
+</header>
+<div id="mobile-menu" class="absolute top-20 left-0 right-0 bg-white border-b border-amber-100 md:hidden hidden z-40">
+    <div class="flex flex-col p-4 gap-4">
+        <a href="{% url 'home' %}" data-nav-link="home" class="text-gray-700 hover:text-amber-600 font-medium py-2" onclick="closeMenu()">Home</a>
+        <a href="{% url 'about' %}" data-nav-link="about" class="text-gray-700 hover:text-amber-600 font-medium py-2" onclick="closeMenu()">About</a>
+        <a href="{% url 'rooms' %}" data-nav-link="rooms" class="text-gray-700 hover:text-amber-600 font-medium py-2" onclick="closeMenu()">Rooms</a>
+        <a href="{% url 'contact' %}" data-nav-link="contact" class="text-gray-700 hover:text-amber-600 font-medium py-2" onclick="closeMenu()">Contact</a>
+        <a href="{% url 'room_booking' %}" class="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 transition-colors font-semibold text-center block" onclick="closeMenu()">Book Now</a>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}" class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full hover:bg-gray-300 transition-colors font-semibold text-center block" onclick="closeMenu()">
+                Log Out ({% if user.first_name and user.last_name %}
+                    {{ user.first_name }} {{ user.last_name|first }}.
+                {% elif user.first_name %}
+                    {{ user.first_name }}
+                {% else %}
+                    {# Fallback to full username, avoiding invalid filters #}
+                    {{ user.username }} 
+                {% endif %})
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="bg-amber-600 text-white px-6 py-2 rounded-full hover:bg-amber-700 transition-colors font-semibold text-center block" onclick="closeMenu()">Login/signup</a>
+        {% endif %}
+        </div>
+</div>
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
+
+    menuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        menuIcon.classList.toggle('hidden');
+        closeIcon.classList.toggle('hidden');
+    });
+
+    function closeMenu() {
+        mobileMenu.classList.add('hidden');
+        menuIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+    }
+</script>

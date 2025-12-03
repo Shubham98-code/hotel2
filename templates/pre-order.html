@@ -1,0 +1,388 @@
+{% load static %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Order Food Form</title>
+    <link rel="shortcut icon" href="{% static 'css/logo.png' %}" type="image/x-icon"> <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- (Your existing CSS styles) --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .form-container-animation { animation: fadeInUp 0.8s ease-out forwards; }
+        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-3xl mx-auto bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl p-8 md:p-12 my-10 form-container-animation">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Pre-order Your Meal</h1>
+            <p class="text-gray-600 mt-2">Plan ahead and have your food ready when you are.</p>
+        </div>
+
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="p-3 rounded-lg text-center font-semibold
+                        {% if message.tags == 'success' %} bg-green-100 text-green-800 {% endif %}
+                        {% if message.tags == 'error' %} bg-red-100 text-red-800 {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <form id="orderForm" method="POST" action="{% url 'pre_order' %}" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Your Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="customerName" class="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
+                        <input type="text" id="customerName" name="customerName" class="w-full px-4 py-2 text-gray-700 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label for="phoneNumber" class="block text-sm font-medium text-gray-600 mb-1">Phone Number</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" class="w-full px-4 py-2 text-gray-700 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required placeholder="9876543210">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="customerEmail" class="block text-sm font-medium text-gray-600 mb-1">Email Address</label>
+                        <input type="email" id="customerEmail" name="customerEmail" class="w-full px-4 py-2 text-gray-700 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="you@example.com"> </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Pickup Time/Dinning Time</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="preorderDate" class="block text-sm font-medium text-gray-600 mb-1">Date</label>
+                        <input type="date" id="preorderDate" name="preorderDate" class="w-full px-4 py-2 text-gray-700 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label for="preorderTime" class="block text-sm font-medium text-gray-600 mb-1">Time</label>
+                        <input type="time" id="preorderTime" name="preorderTime" class="w-full px-4 py-2 text-gray-700 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Thali Menu</h2>
+                <div id="menuItems">
+                    <h3 class="text-lg font-semibold text-green-700 mb-3">Veg Thali</h3>
+                    <div id="veg-items" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        </div>
+
+                    <h3 class="text-lg font-semibold text-red-700 mt-6 mb-3">Non-Veg Thali</h3>
+                    <div id="non-veg-thali-items" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Extra Items</h2>
+                <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Side Dishes (Half/Full Portions)</h3>
+                <h4 class="text-md font-semibold text-green-700 mt-4 mb-2">Veg Sides</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white/70 rounded-lg border">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left p-3 font-semibold text-gray-600 w-2/5">Item</th>
+                                <th class="text-center p-3 font-semibold text-gray-600">None</th>
+                                <th class="text-center p-3 font-semibold text-gray-600">Half</th>
+                                <th class="text-center p-3 font-semibold text-gray-600">Full</th>
+                                <th class="text-center p-3 font-semibold text-gray-600">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="veg-sides-table-body">
+                            </tbody>
+                    </table>
+                </div>
+
+                <h4 class="text-md font-semibold text-red-700 mt-6 mb-2">Non-Veg Sides</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white/70 rounded-lg border">
+                         <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left p-3 font-semibold text-gray-600 w-2/5">Item</th>
+                                <th class="text-center p-3 font-semibold text-gray-600">None</th>
+                                <th class="text-center p-3 font-semibold text-gray-600">Half</th>
+                                <th class="text-center p-3 font-semibold text-gray-600">Full</th>
+                                <th class="text-center p-3 font-semibold text-gray-600">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="non-veg-sides-table-body">
+                            </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-800 mt-8 mb-3">Other Extras</h3>
+                <div id="other-extras-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Special Instructions</h2>
+                <textarea id="specialInstructions" name="specialInstructions" rows="4" class="w-full px-4 py-2 text-gray-700 bg-white/80 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., extra sauce, no onions, etc."></textarea>
+            </div>
+
+            <div id="live-bill-section" class="my-6 p-4 bg-gray-100 rounded-lg text-center">
+                <h3 class="text-xl font-bold text-gray-800">Current Total: <span id="live-total">₹0.00</span></h3>
+            </div>
+
+            <input type="hidden" id="orderedItems" name="orderedItems">
+            <input type="hidden" id="totalCost" name="totalCost">
+
+            <div class="text-center">
+                <button type="submit" class="w-full md:w-auto bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-transform transform hover:scale-105">
+                    Place Pre-order
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('orderForm');
+            // const modal = document.getElementById('summaryModal'); // REMOVED
+            // const closeModalBtn = document.getElementById('closeModal'); // REMOVED
+            // const summaryContent = document.getElementById('summaryContent'); // REMOVED
+            const preorderDateInput = document.getElementById('preorderDate');
+            const liveTotalSpan = document.getElementById('live-total');
+
+            // NEW: Get the hidden input fields
+            const hiddenItemsInput = document.getElementById('orderedItems');
+            const hiddenTotalInput = document.getElementById('totalCost');
+
+            // --- Set minimum date for pre-order to today ---
+            const today = new Date().toISOString().split('T')[0];
+            preorderDateInput.setAttribute('min', today);
+
+            // --- Menu Data with Categories ---
+            const menu = [
+                // Veg Thalis
+                { id: 'usna_thali', name: 'Usna Chawaal Thali', price: 50.00, category: 'veg-thali' },
+                { id: 'arwa_thali', name: 'Arwa Chawal Thali', price: 60.00, category: 'veg-thali' },
+                { id: 'roti_thali', name: 'Roti Sabji Thali', price: 50.00, category: 'veg-thali' },
+                
+                // Non-Veg Thalis
+                { id: 'chicken_chawal', name: 'Chicken Chawal', price: 80.00, category: 'non-veg-thali' },
+                { id: 'mutton_chawal', name: 'Mutton Chawal', price: 150.00, category: 'non-veg-thali' },
+                { id: 'fish_chawal', name: 'Fish Chawal', price: 70.00, category: 'non-veg-thali' },
+                { id: 'egg_curry_chawal', name: 'Egg Curry Chawal', price: 60.00, category: 'non-veg-thali' },
+
+                // Extra Items - Veg
+                { id: 'paneer_masala', name: 'Paneer Masala', category: 'extra', subCategory: 'veg', options: [ { size: 'Half', price: 80.00 }, { size: 'Full', price: 150.00 } ] },
+                { id: 'pure_dahi', name: 'Pure Dahi', price: 40.00, category: 'extra', subCategory: 'veg' },
+                { id: 'roti', name: 'Roti (per piece)', price: 6.00, category: 'extra', subCategory: 'veg' },
+                { id: 'butter_roti', name: 'Butter Roti (per piece)', price: 12.00, category: 'extra', subCategory: 'veg' },
+                { id: 'salad', name: 'Salad', price: 10.00, category: 'extra', subCategory: 'veg' },
+                { id: 'bujia_choka', name: 'Bujia/Choka', price: 20.00, category: 'extra', subCategory: 'veg' },
+                
+                // Extra Items - Non-Veg
+                { id: 'fish_curry', name: 'Fish Curry', category: 'extra', subCategory: 'non-veg', options: [ { size: 'Half (2pcs)', price: 60.00 }, { size: 'Full (4pcs)', price: 120.00 } ] },
+                { id: 'chicken_curry', name: 'Chicken Curry', category: 'extra', subCategory: 'non-veg', options: [ { size: 'Half (2pcs)', price: 60.00 }, { size: 'Full (4pcs)', price: 120.00 } ] },
+                { id: 'mutton_curry', name: 'Mutton Curry', category: 'extra', subCategory: 'non-veg', options: [ { size: 'Half (2pcs)', price: 60.00 }, { size: 'Full (4pcs)', price: 120.00 } ] },
+                { id: 'pot_kalaji', name: 'Pot Kalaji', category: 'extra', subCategory: 'non-veg', options: [ { size: 'Half', price: 70.00 }, { size: 'Full', price: 140.00 } ] },
+                { id: 'egg_curry', name: 'Egg Curry', category: 'extra', subCategory: 'non-veg', options: [ { size: 'Half', price: 50.00 }, { size: 'Full', price: 100.00 } ] },
+                { id: 'omlet', name: 'Omelette', price: 40.00, category: 'extra', subCategory: 'non-veg' },
+            ];
+
+            // --- Helper function to format time (No changes) ---
+            function formatTime12Hour(timeString) {
+                if (!timeString) return '';
+                const [hourString, minute] = timeString.split(':');
+                let hour = parseInt(hourString, 10);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                hour = hour % 12;
+                hour = hour ? hour : 12; // The hour '0' should be '12'
+                return `${hour}:${minute} ${ampm}`;
+            }
+
+            // --- Central function to get order details (No changes) ---
+            function getOrderDetails() {
+                let totalCost = 0;
+                let orderedItemsList = []; // This will be an array of objects
+                let itemsFound = false;
+
+                // Process all checkboxes
+                const allCheckboxes = document.querySelectorAll('input[type="checkbox"].menu-item');
+                allCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const item = menu.find(m => m.id === checkbox.value);
+                        const qtyInput = document.getElementById(`${checkbox.value}_qty`);
+                        const quantity = parseInt(qtyInput.value) || 1;
+                        if (item && quantity > 0) {
+                            itemsFound = true;
+                            orderedItemsList.push({ name: item.name, quantity: quantity, price: item.price });
+                            totalCost += item.price * quantity;
+                        }
+                    }
+                });
+
+                // Process all radio button groups
+                const radioGroups = [...new Set(menu.filter(item => item.options).map(item => item.id))];
+                radioGroups.forEach(groupId => {
+                    const selectedRadio = document.querySelector(`input[name="${groupId}"]:checked`);
+                    if (selectedRadio && selectedRadio.value > 0) { // A portion is selected
+                        const price = parseFloat(selectedRadio.value);
+                        const qtyInput = document.getElementById(`${groupId}_qty`);
+                        const quantity = parseInt(qtyInput.value) || 1;
+                        if (quantity > 0) {
+                            itemsFound = true;
+                            const name = selectedRadio.dataset.name;
+                            const size = selectedRadio.dataset.size;
+                            orderedItemsList.push({ name: `${name} (${size})`, quantity: quantity, price: price });
+                            totalCost += price * quantity;
+                        }
+                    }
+                });
+                
+                return { totalCost, orderedItemsList, itemsFound };
+            }
+
+            // --- Function to Calculate and Display Live Total (No changes) ---
+            function calculateLiveTotal() {
+                const { totalCost } = getOrderDetails();
+                liveTotalSpan.textContent = `₹${totalCost.toFixed(2)}`;
+            }
+
+            // --- Dynamically Populate Menu into Categories (No changes) ---
+            function populateMenu() {
+                const vegItemsContainer = document.getElementById('veg-items');
+                const nonVegThaliContainer = document.getElementById('non-veg-thali-items');
+                const vegSidesTableBody = document.getElementById('veg-sides-table-body');
+                const nonVegSidesTableBody = document.getElementById('non-veg-sides-table-body');
+                const otherExtrasContainer = document.getElementById('other-extras-container');
+
+                // Clear any existing items
+                vegItemsContainer.innerHTML = ''; nonVegThaliContainer.innerHTML = '';
+                vegSidesTableBody.innerHTML = ''; nonVegSidesTableBody.innerHTML = '';
+                otherExtrasContainer.innerHTML = '';
+
+                menu.forEach(item => {
+                    if (item.category === 'veg-thali' || item.category === 'non-veg-thali') {
+                        const itemElement = document.createElement('div');
+                        itemElement.classList.add('flex', 'items-center', 'justify-between', 'p-3', 'bg-white/70', 'rounded-lg', 'border');
+                        itemElement.innerHTML = `
+                            <div class="flex items-center">
+                                <input id="${item.id}" type="checkbox" name="foodItem" value="${item.id}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 menu-item">
+                                <label for="${item.id}" class="ml-3 text-sm font-medium text-gray-800">${item.name}</label>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-sm font-semibold text-gray-600 mr-2">₹${item.price.toFixed(2)}</span>
+                                <input type="number" id="${item.id}_qty" value="1" min="1" class="menu-item-qty w-16 p-1 border rounded hidden">
+                            </div>
+                        `;
+                        if (item.category === 'veg-thali') vegItemsContainer.appendChild(itemElement);
+                        else nonVegThaliContainer.appendChild(itemElement);
+
+                    } else if (item.category === 'extra') {
+                        if (item.options) { // Item has half/full options, add to tables
+                            const row = document.createElement('tr');
+                            row.classList.add('border-t');
+                            const nameCell = `<td class="p-3 text-sm font-medium text-gray-800">${item.name}</td>`;
+                            const noneCell = `<td class="text-center p-3"><input id="${item.id}_none" type="radio" name="${item.id}" value="0" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 menu-item" checked></td>`;
+                            const halfOption = item.options[0]; const fullOption = item.options[1];
+                            const halfCell = `<td class="text-center p-3"><input id="${item.id}_half" type="radio" name="${item.id}" value="${halfOption.price}" data-name="${item.name}" data-size="${halfOption.size}" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 menu-item"><label for="${item.id}_half" class="ml-2 text-sm text-gray-600">₹${halfOption.price.toFixed(2)}</label></td>`;
+                            const fullCell = `<td class="text-center p-3"><input id="${item.id}_full" type="radio" name="${item.id}" value="${fullOption.price}" data-name="${item.name}" data-size="${fullOption.size}" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 menu-item"><label for="${item.id}_full" class="ml-2 text-sm text-gray-600">₹${fullOption.price.toFixed(2)}</label></td>`;
+                            const qtyCell = `<td class="text-center p-3"><input type="number" id="${item.id}_qty" value="1" min="1" class="menu-item-qty w-16 p-1 border rounded hidden"></td>`;
+                            row.innerHTML = nameCell + noneCell + halfCell + fullCell + qtyCell;
+                            if (item.subCategory === 'veg') vegSidesTableBody.appendChild(row);
+                            else nonVegSidesTableBody.appendChild(row);
+                        } else { // Single price item, add to "Other Extras"
+                            const itemElement = document.createElement('div');
+                            itemElement.classList.add('flex', 'items-center', 'justify-between', 'p-3', 'bg-white/70', 'rounded-lg', 'border');
+                            itemElement.innerHTML = `
+                                <div class="flex items-center">
+                                    <input id="${item.id}" type="checkbox" name="foodItem" value="${item.id}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 menu-item">
+                                    <label for="${item.id}" class="ml-3 text-sm font-medium text-gray-800">${item.name}</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-semibold text-gray-600 mr-2">₹${item.price.toFixed(2)}</span>
+                                    <input type="number" id="${item.id}_qty" value="1" min="1" class="menu-item-qty w-16 p-1 border rounded hidden">
+                                </div>
+                            `;
+                            otherExtrasContainer.appendChild(itemElement);
+                        }
+                    }
+                });
+                
+                // Add event listeners (No changes)
+                form.addEventListener('change', (e) => {
+                    if (e.target.classList.contains('menu-item')) {
+                        // For checkboxes
+                        if (e.target.type === 'checkbox') {
+                            const qtyInput = document.getElementById(`${e.target.value}_qty`);
+                            if (qtyInput) qtyInput.classList.toggle('hidden', !e.target.checked);
+                        }
+                        // For radio buttons
+                        if (e.target.type === 'radio') {
+                            const qtyInput = document.getElementById(`${e.target.name}_qty`);
+                            if (qtyInput) qtyInput.classList.toggle('hidden', e.target.value === '0');
+                        }
+                        calculateLiveTotal();
+                    }
+                    if (e.target.classList.contains('menu-item-qty')) {
+                        calculateLiveTotal();
+                    }
+                });
+            }
+
+            populateMenu();
+            calculateLiveTotal(); // Initial calculation
+
+            // --- UPDATED: Form Submission Logic ---
+            form.addEventListener('submit', function (event) {
+                // First, prevent the form from submitting
+                event.preventDefault();
+
+                // Run validation checks
+                if (!form.checkValidity()) {
+                    const invalidFields = form.querySelectorAll(':invalid');
+                    invalidFields[0].focus();
+                    alert('Please fill out all required fields correctly.');
+                    return;
+                }
+                
+                const { totalCost, orderedItemsList, itemsFound } = getOrderDetails();
+
+                if (!itemsFound) {
+                    alert('Please select at least one item.');
+                    return;
+                }
+                
+                // --- KEY CHANGE ---
+                // Set the values of the hidden inputs before submitting
+                hiddenItemsInput.value = JSON.stringify(orderedItemsList);
+                hiddenTotalInput.value = totalCost.toFixed(2);
+
+                // Now, manually submit the form
+                form.submit();
+
+                // --- REMOVED: All Google Apps Script 'fetch' logic and modal code ---
+                // const submitButton = ...
+                // submitButton.disabled = true; ...
+                // const scriptURL = ...
+                // fetch(...) ...
+            });
+
+            // --- REMOVED: Modal Close Logic ---
+            // closeModalBtn.addEventListener(...)
+            // modal.addEventListener(...)
+        });
+    </script>
+
+</body>
+</html>

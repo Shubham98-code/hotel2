@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ order.id }}</title>
+    <style>
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .invoice-container {
+            width: 90%;
+            margin: 0 auto;
+        }
+        .header-table {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .logo {
+            width: 100px; /* Adjust as needed */
+            height: auto;
+        }
+        .invoice-header {
+            text-align: right;
+            vertical-align: top;
+        }
+        .invoice-header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #000;
+        }
+        .invoice-header p {
+            margin: 0;
+            font-size: 14px;
+        }
+        
+        .details-table {
+            width: 100%;
+            margin-bottom: 40px;
+        }
+        .billed-to {
+            vertical-align: top;
+            width: 50%;
+        }
+        .hotel-details {
+            vertical-align: top;
+            text-align: right;
+            width: 50%;
+        }
+        .details-table h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        .details-table p {
+            margin: 0;
+        }
+
+        .order-section-title {
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .items-table th {
+            text-align: left;
+            color: #f5a316; /* Gold color from your site */
+            font-weight: bold;
+            padding-bottom: 10px;
+        }
+        .items-table .price-header {
+            text-align: right;
+        }
+        .items-table td {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .items-table .price {
+            text-align: right;
+        }
+
+        .notes-total-table {
+            width: 100%;
+        }
+        .notes {
+            vertical-align: top;
+            width: 60%;
+        }
+        .total {
+            vertical-align: top;
+            text-align: right;
+            width: 40%;
+        }
+        .total h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #000;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        
+        <table class="header-table">
+            <tr>
+                <td style="vertical-align: top;">
+                    {% load static %}
+                    <img src="{% static 'css/logo.png' %}" alt="Gupta Hotel" class="logo">
+                </td>
+                <td class="invoice-header">
+                    <h1>INVOICE</h1>
+                    <p>Invoice #: {{ order.id }}</p>
+                </td>
+            </tr>
+        </table>
+
+        <table class="details-table">
+            <tr>
+                <td class="billed-to">
+                    <h3>Billed To:</h3>
+                    <p>{{ order.customer_name }}</p>
+
+                    <h3 style="margin-top: 20px;">Order Date:</h3>
+                    <p>{{ order.placed_at|date:"m/d/Y" }}</p>
+                </td>
+                <td class="hotel-details">
+                    <h3>The Gupta Hotel</h3>
+                    <p>Stila Mandir, Near Sabji Mandi</p>
+                    <p>Sakchi, Jamshedpur, 831001</p>
+                    <p>+91 9835364361</p>
+                </td>
+            </tr>
+        </table>
+
+        <div class="order-section-title">Order Details</div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th class="price-header">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.ordered_items %}
+                <tr>
+                    <td>{{ item.name }} x {{ item.quantity }}</td>
+                    <td class="price">₹{{ item.price|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="notes-total-table">
+            <tr>
+                <td class="notes">
+                    {% if order.special_instructions %}
+                    <p><strong>Notes:</strong> {{ order.special_instructions }}</p>
+                    {% endif %}
+                </td>
+                <td class="total">
+                    <h2>Total Bill: ₹{{ order.total_cost|floatformat:2 }}</h2>
+                </td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            <p>Thank you for your business!</p>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,597 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms & Suites | The Gupta Hotel</title>
+    <link rel="shortcut icon" href="/static/css/logo.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Custom Fonts and Variables --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap');
+
+        body {
+            
+            font-family: 'Inter', sans-serif;
+            min-height: 100svh;
+            background-color: #f9fafb;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a, #3d2817);
+        }
+
+        /* --- Framer Motion Scroll Animation Simulation (Intersection Observer) --- */
+        .animate-on-scroll {
+            opacity: 0;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+        }
+        
+        /* Base Container Setup (Needed for Footer Integration) */
+        .section-container {
+          position: relative;
+          z-index: 1; 
+        }
+
+        /* Hover Effect for general content blocks (Needed for Footer Integration) */
+        .content-block-hover {
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 1;
+          position: relative;
+        }
+        .content-block-hover:hover {
+          transform: scale(1.02); 
+          box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 6px 8px -3px rgba(0, 0, 0, 0.1);
+          z-index: 10;
+        }
+
+        /* --- Hover/Modal Effects --- */
+        .card-hover-effect {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-8px); /* Simulates Framer Motion's whileHover */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .amenity-hover-effect {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .amenity-hover-effect:hover {
+            transform: translateY(-4px) scale(1.03); /* Apply both pop and scale */
+            box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* custom shadow */
+            border-color: #fcd34d; /* hover:border-amber-300 */
+        }
+        
+        .icon-animation {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .amenity-hover-effect:hover .icon-animation {
+            transform: scale(1.2) rotate(6deg);
+        }
+        
+        .image-zoom-effect {
+            transition: transform 0.3s ease-out;
+        }
+        .card-hover-effect:hover .image-zoom-effect {
+            transform: scale(1.1);
+        }
+        
+        /* Modal Transitions */
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        .modal-open .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .modal-open .modal-overlay {
+            opacity: 1;
+        }
+        
+        /* Keyframes for smooth mobile menu transition (from layout.js) */
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideOutUp {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+        .mobile-menu-enter { animation: slideInDown 0.2s ease-out forwards; }
+        .mobile-menu-exit { animation: slideOutUp 0.2s ease-in forwards; }
+                /* Animation Classes */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        #reservation-section{
+            background-image: url(/static/css/back.jpg);     
+            background-size: cover;
+            background-position: center;
+        }
+        #rooms-section{
+            background-image: url(/static/css/pexels-codioful-7130553.jpg);
+            background-size: cover;
+            background-position: center;
+
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+        <!-- Header and mobile menu will be injected here -->
+        {% include 'header.html' %}
+
+    <div id="app" class="flex-grow">
+        </div>
+
+    <div id="footer-placeholder"></div>
+
+    <div id="booking-modal" class="fixed inset-0 z-50 hidden modal-overlay opacity-0" >
+        <img src="back.jpg" alt="">
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative w-full h-full flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto modal-content">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <h3 class="text-2xl font-bold text-gray-900">Room Reservation</h3>
+                        <button id="close-modal" class="text-gray-500 hover:text-gray-900 transition-colors" aria-label="Close modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                    <p id="modal-room-name" class="text-lg font-semibold text-amber-600 mb-4"></p>
+
+                    <form id="reservation-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                                <input type="text" id="name" name="name" required placeholder="John Doe" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent outline-none transition">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                                <input type="email" id="email" name="email" required placeholder="john@example.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent outline-none transition">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required placeholder="+91 98765 43210" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent outline-none transition">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="checkIn" class="block text-sm font-semibold text-gray-700 mb-2">Check-in Date *</label>
+                                <input type="date" id="checkIn" name="checkIn" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent outline-none transition">
+                            </div>
+                            <div>
+                                <label for="checkOut" class="block text-sm font-semibold text-gray-700 mb-2">Check-out Date *</label>
+                                <input type="date" id="checkOut" name="checkOut" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent outline-none transition">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="guests" class="block text-sm font-semibold text-gray-700 mb-2">Number of Guests *</label>
+                                <input type="number" id="guests" name="guests" required min="1" placeholder="2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent outline-none transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="specialRequests" class="block text-sm font-semibold text-gray-700 mb-2">Special Requests</label>
+                            <textarea id="specialRequests" name="specialRequests" placeholder="Any special requests or dietary preferences?" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-600 focus:border-transparent outline-none transition resize-none"></textarea>
+                        </div>
+                        
+                        <input type="hidden" id="roomType" name="roomType">
+                        <input type="hidden" id="roomPrice" name="roomPrice">
+
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-lg transition-colors text-lg">
+                            Complete Reservation
+                        </button>
+                        <p class="text-center text-gray-600 text-sm mt-4">We will confirm your reservation via email within 24 hours.</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Data Definitions (unchanged) ---
+        const ROOMS_DATA = [
+            { id: 1, name: "Deluxe Room", price: 5000, image: "/static/css/delux.jpg", description: "Perfectly appointed with modern amenities and comfort for a pleasant stay.", capacity: "2 Guests", size: "350 sq ft", features: ["King-size Bed", "Air Conditioning", "32-inch Flat-screen TV", "Mini Bar", "High-speed WiFi", "Work Desk", "Rain Shower", "24/7 Room Service"] },
+            { id: 2, name: "Premium Suite", price: 8000, image: "/static/css/premium.jpg", description: "Spacious suite with separate living area and premium amenities.", capacity: "2-4 Guests", size: "550 sq ft", features: ["2 Double Beds", "Separate Living Area", "Full Kitchen", "Luxury Bathroom", "Balcony with City View", "High-speed WiFi", "Premium Toiletries", "Concierge Service"] },
+            { id: 3, name: "Royal Suite", price: 12000, image: "/static/css/king.jpg", description: "Ultimate luxury with exclusive amenities and personalized service.", capacity: "2-4 Guests", size: "750 sq ft", features: ["King Suite Bed", "Separate Living & Dining", "Premium Kitchen", "Spa Bathroom", "Large Balcony", "Butler Service", "Personalized Service", "VIP Parking"] },
+            { id: 4, name: "Family Room", price: 7000, image: "/static/css/family.jpg", description: "Perfect for families with multiple sleeping areas and entertainment.", capacity: "4-6 Guests", size: "600 sq ft", features: ["2 Double Beds + 1 Single", "Living Area", "Kids' Entertainment", "Full Bathroom", "Kitchenette", "High-speed WiFi", "Game Console", "Room Service"] }
+        ];
+
+        const AMENITIES_DATA = [
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/></svg>', title: "High-speed WiFi" },
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/><path d="M10 2v2"/><path d="M14 2v2"/></svg>', title: "Mini Bar" },
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="m17 2-5 5-5-5"/><rect width="20" height="15" x="2" y="7" rx="2"/></svg>', title: "Flat-screen TV" },
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M10 4 8 6"/><path d="M17 19v2"/><path d="M2 12h20"/><path d="M7 19v2"/><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg>', title: "Luxury Bath" },
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/></svg>', title: "Air Conditioning" },
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>', title: "Room Service" },
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>', title: "Work Desk" },
+            { icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>', title: "Daily Housekeeping" }
+        ];
+
+        // --- State Management and Utility Functions (unchanged) ---
+        let reservationState = {
+            name: "", email: "", phone: "", checkIn: "", checkOut: "",
+            roomType: "", guests: "", specialRequests: ""
+        };
+        let modalRoomId = null;
+
+        /**
+         * Simple toast/alert replacement (unchanged)
+         */
+        function showMessage(message, type = 'success') {
+            const container = document.createElement('div');
+            container.className = 'fixed bottom-4 right-4 z-[9999] p-4 rounded-lg shadow-xl';
+            
+            let bgColor, textColor, borderColor;
+            if (type === 'success') {
+                bgColor = 'bg-green-50';
+                textColor = 'text-green-700';
+                borderColor = 'border-green-200';
+            } else {
+                bgColor = 'bg-red-50';
+                textColor = 'text-red-700';
+                borderColor = 'border-red-200';
+            }
+
+            container.classList.add(bgColor, textColor, borderColor, 'border');
+            container.innerHTML = `<p class="font-semibold">${message}</p>`;
+
+            document.body.appendChild(container);
+
+            setTimeout(() => {
+                container.style.opacity = '0';
+                container.style.transform = 'translateY(20px)';
+                container.style.transition = 'opacity 0.5s, transform 0.5s';
+                setTimeout(() => container.remove(), 500);
+            }, 5000);
+        }
+        
+        /**
+         * Handles form input changes (unchanged)
+         */
+        function handleFormChange(event) {
+            const { name, value } = event.target;
+            reservationState[name] = value;
+        }
+
+        /**
+         * Handles form submission in the modal (unchanged)
+         */
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const room = ROOMS_DATA.find(r => r.id === modalRoomId);
+            if (!room) {
+                showMessage("Error: Room details missing.", 'error');
+                return;
+            }
+            const formData = {
+                ...reservationState,
+                roomType: room.name,
+                roomPrice: room.price
+            };
+            console.log("Booking submitted:", formData);
+            showMessage(`Success! Booking request for ${room.name} (₹${room.price.toLocaleString()}) received.`);
+            modalRoomId = null;
+            closeModal();
+        }
+        
+        /**
+         * Handles form submission in the inline CTA form (THIS FUNCTION IS NOW OBSOLETE)
+         */
+        function handleFormSubmitInline(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            console.log("Inline Booking submitted:", data);
+            showMessage(`Success! Inline booking request for ${data.roomType} received.`);
+            event.target.reset();
+        }
+
+        /**
+         * Opens the booking modal (unchanged)
+         * NOTE: This function is still defined but the button no longer calls it.
+         */
+        function openModal(roomId) {
+            const room = ROOMS_DATA.find(r => r.id === roomId);
+            if (!room) return;
+            
+            const modal = document.getElementById('booking-modal');
+            const modalRoomName = document.getElementById('modal-room-name');
+            const form = document.getElementById('reservation-form');
+
+            modalRoomId = roomId;
+            modalRoomName.textContent = room.name;
+            document.getElementById('roomType').value = room.name;
+            form.querySelector('input[name="roomPrice"]').value = room.price;
+            form.reset();
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('modal-open');
+                document.body.style.overflow = 'hidden';
+            }, 10);
+
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                input.removeEventListener('change', handleFormChange);
+                input.addEventListener('change', handleFormChange);
+            });
+        }
+
+        /**
+         * Closes the booking modal (unchanged)
+         */
+        function closeModal() {
+            const modal = document.getElementById('booking-modal');
+            modal.classList.remove('modal-open');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        // --- Intersection Observer Logic (unchanged) ---
+        function setupIntersectionObserver(className, rootMargin = '0px', initialDelay = 0) {
+            const elements = document.querySelectorAll(className);
+            if (elements.length === 0) return;
+
+            // Use a Map to track indices *per section*
+            const sectionIndices = new Map();
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const el = entry.target;
+                        
+                        // Find the parent section
+                        const parentSection = el.closest('section');
+                        let sectionKey = 'global';
+                        if (parentSection) {
+                            sectionKey = parentSection.id || parentSection.className;
+                        }
+                        
+                        // Get or initialize index for this section
+                        let index = sectionIndices.get(sectionKey) || 0;
+                        
+                        // Check if the element has a manually set index
+                        if (el.dataset.index !== undefined) {
+                            index = parseInt(el.dataset.index);
+                        } else {
+                            // Only increment if no manual index is set
+                            sectionIndices.set(sectionKey, index + 1);
+                        }
+                        
+                        const delay = initialDelay + index * 0.1; 
+                        el.style.transitionDelay = `${delay}s`;
+                        el.classList.add('is-visible');
+                        observer.unobserve(el);
+                    }
+                });
+            }, { rootMargin });
+
+            elements.forEach((el) => {
+                observer.observe(el);
+            });
+        }
+        
+        // --- HTML Rendering Functions (Templates) ---
+        
+        /**
+         * Renders the Room Card component (MODIFIED FOR REDIRECTION)
+         */
+        function renderRoomCard(room, index) {
+            // data-index is now auto-handled by IntersectionObserver
+            return `
+                <div class="card-hover-effect bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-shadow animate-on-scroll">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="${room.image}" alt="${room.name}" class="w-full h-full object-cover image-zoom-effect">
+                        <div class="absolute top-4 right-4 bg-amber-600 text-white px-4 py-2 rounded-lg font-bold">
+                            ₹${room.price.toLocaleString()}
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">${room.name}</h3>
+                        <p class="text-gray-600 mb-4">${room.description}</p>
+                        <div class="flex gap-4 mb-6 text-sm text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <span class="text-amber-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></svg>
+                                </span>
+                                ${room.capacity}
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-amber-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 8 6"/><path d="M17 19v2"/><path d="M2 12h20"/><path d="M7 19v2"/><path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg>
+                                </span>
+                                ${room.size}
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            ${room.features.map(feature => `
+                                <div class="flex items-start gap-2 text-sm text-gray-600">
+                                    <span class="text-amber-600 font-bold mt-0.5">✓</span>
+                                    <span>${feature}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button onclick="window.location.href='/room/?room_id=${room.id}'" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 rounded-lg transition-colors transition duration-300 hover:scale-[1.01] active:scale-[0.99]">
+                            Book Now
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Renders the Amenity Box component (MODIFIED)
+         */
+        function renderAmenityBox(amenity, index) {
+            // --- CHANGE 2: Set data-index to 1 so all cards load with the same 0.1s delay ---
+            return `
+                <div class="bg-white p-6 rounded-lg border border-amber-100 hover:border-amber-300 text-center animate-on-scroll amenity-hover-effect" data-index="1">
+                    <div class="flex justify-center mb-3 text-amber-600 icon-animation">
+                        ${amenity.icon}
+                    </div>
+                    <p class="font-semibold text-gray-900">${amenity.title}</p>
+                </div>
+            `;
+        }
+
+        /**
+         * Renders the main sections of the Rooms page (MODIFIED: reservation-section updated)
+         */
+        function renderRoomsPage() {
+            return `
+                <section id="hero-rooms" class="hero-gradient text-white py-20 md:py-32">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-on-scroll" data-index="0">Our Rooms & Suites</h1>
+                        <p class="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto animate-on-scroll" data-index="1">Exquisitely designed accommodations with world-class amenities</p>
+                    </div>
+                </section>
+
+                <section id="rooms-section" class="py-20 md:py-28 bg-white">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center animate-on-scroll" data-index="0">Browse Our Accommodations</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            ${ROOMS_DATA.map(renderRoomCard).join('')}
+                        </div>
+                    </div>
+                </section>
+
+                <section id="amenities-section" class="py-20 md:py-28 bg-gray-50">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center animate-on-scroll" data-index="0">Room Amenities</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            ${AMENITIES_DATA.map(renderAmenityBox).join('')}
+                        </div>
+                    </div>
+                </section>
+
+                <section id="reservation-section" class="py-20 md:py-28 bg-white text-center">
+                    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6 animate-on-scroll" data-index="0">Ready to Book Your Dream Stay?</h2>
+                        <p class="text-lg text-gray-600 mb-10 max-w-xl mx-auto animate-on-scroll" data-index="1">
+                            Click below to check availability and securely reserve your room on our dedicated booking page.
+                        </p>
+                        
+                        <a href="/room/" class="inline-block bg-amber-600 text-white font-bold py-4 px-10 rounded-full text-lg shadow-xl hover:bg-amber-700 transition duration-300 transform hover:scale-105 active:scale-100 animate-on-scroll" data-index="2">
+                            Book Your Stay Now
+                        </a>
+                        
+                    </div>
+                </section>
+                `;
+        }
+
+
+        // --- Initialization on Window Load (REVISED) ---
+        window.onload = function() {
+            // 1. Render Page Content
+            const appDiv = document.getElementById('app');
+            appDiv.innerHTML = renderRoomsPage();
+
+            // 2. Setup Modal Event Listeners (The modal form is still present but hidden)
+            const form = document.getElementById('reservation-form');
+            const closeModalButton = document.getElementById('close-modal');
+            const modal = document.getElementById('booking-modal');
+            
+            form.addEventListener('submit', handleFormSubmit);
+            closeModalButton.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target.classList.contains('absolute') && e.target.classList.contains('inset-0')) {
+                    closeModal();
+                }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('modal-open')) {
+                    closeModal();
+                }
+            });
+            
+            // 3. (Inline form submission logic removed as the form is gone)
+
+            // 4. Setup Scroll Animations
+            setupIntersectionObserver('.animate-on-scroll');
+        };
+
+    </script>
+
+    <script src="{% static 'css/layout.js' %}" defer></script>
+    <style>
+        /* Modal Animations */
+        .modal-content {
+            transform: translateY(-20px);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+        .modal-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+        .modal-open .modal-overlay {
+            opacity: 1;
+        }
+        .modal-open .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        /* Mobile Menu Animations */
+        @keyframes slideInDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        @keyframes slideOutUp {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100%); }
+        }
+        .mobile-menu-open {
+            animation: slideInDown 0.3s forwards;
+        }   
+        .mobile-menu-close {
+            animation: slideOutUp 0.3s forwards;
+        }
+        
+        /* Modal Background Image */
+        #booking-modal img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.5);
+        }
+        /* Card Hover Effect */
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .card-hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        /* Image Zoom Effect */
+        .image-zoom-effect {
+            transition: transform 0.5s ease;
+        }
+        .image-zoom-effect:hover {
+            transform: scale(1.05);
+        }
+
+    </style>
+</body>
+</html>
