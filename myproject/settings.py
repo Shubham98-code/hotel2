@@ -156,6 +156,17 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 SOCIALACCOUNT_LOGIN_ON_GET = True
-# Fix for Railway HTTPS handling
+# --- FIX FOR RAILWAY ADMIN LOADING ---
+
+# 1. Trust the secure connection from Railway
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_TRUSTED_ORIGINS = ['https://web-production-74395.up.railway.app']
+
+# 2. Trust your specific domain for forms (CSRF)
+# Use your exact Railway URL here (make sure to include https://)
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-74395.up.railway.app',
+]
+
+# 3. Ensure cookies are sent securely
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
