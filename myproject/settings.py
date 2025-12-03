@@ -156,3 +156,6 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 SOCIALACCOUNT_LOGIN_ON_GET = True
+# Fix for Railway HTTPS handling
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = ['https://web-production-74395.up.railway.app']
