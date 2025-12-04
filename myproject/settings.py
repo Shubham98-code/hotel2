@@ -108,14 +108,18 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- EMAIL CONFIGURATION (Gmail SSL Fix) ---
+# settings.py
+
+# --- EMAIL CONFIGURATION (Gmail Fix) ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465               # <--- MUST BE 465 (Not 587)
-EMAIL_USE_TLS = False          # <--- Turn off TLS
-EMAIL_USE_SSL = True           # <--- Turn on SSL
-EMAIL_TIMEOUT = 10             # <--- Stop it from freezing forever
 
+# CHANGE THESE 3 LINES:
+EMAIL_PORT = 587               # Switch from 465 to 587
+EMAIL_USE_TLS = True           # Turn ON TLS
+EMAIL_USE_SSL = False          # Turn OFF SSL (Important!)
+
+EMAIL_TIMEOUT = 10
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
