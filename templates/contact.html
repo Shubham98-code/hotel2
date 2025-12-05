@@ -32,19 +32,12 @@
       }
 
       /* --- Animations from home --- */
-      
-      /* Base styles for elements before animation (hidden/translated) */
-      .js-animate {
-          opacity: 0;
-      }
-      
-      /* Directional classes for animation start position */
+      .js-animate { opacity: 0; }
       .js-from-up { transform: translateY(40px); }
       .js-from-down { transform: translateY(-40px); }
       .js-from-left { transform: translateX(-40px); }
       .js-from-right { transform: translateX(40px); }
 
-      /* Class added by Intersection Observer when in view */
       .js-in-view {
           transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
                       opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -52,7 +45,6 @@
           transform: translate(0, 0);
       }
       
-      /* Global Hover/Tap effects from home */
       .js-interactive {
           transition: transform 0.3s ease-out, box-shadow 0.3s, background-color 0.3s, filter 0.3s;
       }
@@ -61,31 +53,17 @@
            transition: transform 0.3s ease-out, box-shadow 0.3s, border-color 0.3s !important;
       }
 
-      .js-interactive:hover {
-          transform: scale(1.05);
-      }
-      .js-interactive:active {
-          transform: scale(0.98);
-      }
+      .js-interactive:hover { transform: scale(1.05); }
+      .js-interactive:active { transform: scale(0.98); }
       
-      /* Custom hover lift effect for cards from home */
       .card-hover-transform:hover {
           transform: translateY(-8px) !important;
           filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.08)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.15));
       }
-       .card-hover-transform {
-          filter: drop-shadow(0 0px 0px transparent);
-      }
+       .card-hover-transform { filter: drop-shadow(0 0px 0px transparent); }
       
-      /* --- End Animations from home --- */
-      
-      /* Base Container Setup */
-      .section-container {
-        position: relative;
-        z-index: 1; 
-      }
+      .section-container { position: relative; z-index: 1; }
 
-      /* Hover Effect for general content blocks (scale pop effect) - Kept from contact */
       .content-block-hover {
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -97,64 +75,34 @@
         z-index: 10;
       }
 
-      /* Smaller vertical lift effect */
-      .card-hover {
-        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-      }
+      .card-hover { transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; }
       .card-hover:hover {
         transform: translateY(-4px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
       }
       
-      /* Additional Hover for Icons/Elements */
       .icon-hover-rotate:hover {
           transform: rotate(10deg) scale(1.1);
           transition: transform 0.3s ease-out;
       }
-      .icon-container {
-          transition: transform 0.3s ease-out;
-      }
+      .icon-container { transition: transform 0.3s ease-out; }
       
-      .list-item-scale {
-          transition: transform 0.2s ease-out;
-      }
-      .list-item-scale:hover {
-          transform: scale(1.03);
-          color: #1a1a1a;
-      }
+      .list-item-scale { transition: transform 0.2s ease-out; }
+      .list-item-scale:hover { transform: scale(1.03); color: #1a1a1a; }
 
-      /* FAQ Accordion Transition Style */
-      .faq-content-wrapper {
-        transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-      }
+      .faq-content-wrapper { transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out; }
       
-      /* Keyframes for smooth mobile menu transition (from home) */
-      @keyframes slideInDown {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-      }
-      @keyframes slideOutUp {
-          from { opacity: 1; transform: translateY(0); }
-          to { opacity: 0; transform: translateY(-10px); }
-      }
-      .mobile-menu-enter { animation: slideInDown 0.2s ease-out forwards; }
-      .mobile-menu-exit { animation: slideOutUp 0.2s ease-in forwards; }
-
       #contact-section {
         background-image: url(/static/css/back.jpg);
         background-size: cover;
         background-position: center;
       }
-      
-
     </style>
-
   </head>
   <body>
     <div id="app" class="min-h-screen">
       
-      <!-- Header and mobile menu will be injected here -->
-     {% include 'header.html' %}
+      {% include 'header.html' %}
       
       <main>
         
@@ -247,6 +195,7 @@
                 <h2 class="text-3xl font-bold text-gray-900 mb-8">Send us a Message</h2>
                 
                 <form id="contactForm" class="space-y-6">
+                  {% csrf_token %}
                   
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="js-animate js-from-up" style="transition-delay: 0.1s;">
@@ -283,11 +232,14 @@
                   </div>
                   
                   <div class="pt-2 js-animate js-from-up" style="transition-delay: 0.35s;">
-                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-lg transition-colors text-lg card-hover js-interactive">
+                    <button type="submit" id="submitBtn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-lg transition-colors text-lg card-hover js-interactive">
                       Send Message
                     </button>
                     <div id="successMessage" class="hidden mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-                        <p class="font-semibold">Thank you for reaching out! We'll get back to you soon.</p>
+                        <p class="font-semibold">Thank you for reaching out! Your message has been saved successfully.</p>
+                    </div>
+                    <div id="errorMessage" class="hidden mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        <p class="font-semibold">Something went wrong. Please try again.</p>
                     </div>
                   </div>
                 </form>
@@ -297,7 +249,15 @@
                 <h2 class="text-3xl font-bold text-gray-900 mb-8">Visit Us</h2>
                 
                 <div class="bg-white rounded-xl overflow-hidden shadow-lg mb-8 content-block-hover js-animate js-from-up" style="transition-delay: 0.1s;">
-                  <iframe width="100%" height="400" src="https://www.google.com/maps/embed?pb=!1m18!m12!1m3!1d3678.89264259302!2d86.1804590758488!3d22.76901842609062!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f5e31c0440019b%3A0x83e20e83c9c9b53f!2sSabji%20Mandi%2C%20Sakchi%2C%20Jamshedpur%2C%20Jharkhand%20831001!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" style="border:0;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                  <iframe 
+                    width="100%" 
+                    height="400" 
+                    src="https://maps.google.com/maps?q=Stila+Mander,+Sakchi,+Jamshedpur&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                    style="border:0;" 
+                    allowfullscreen 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                  </iframe>
                 </div>
 
                 <div class="bg-gradient-to-br from-amber-50 to-white p-8 rounded-xl border border-amber-100 content-block-hover card-hover-transform js-animate js-from-up" style="transition-delay: 0.2s;">
@@ -333,7 +293,6 @@
                     <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Frequently Asked Questions</h2>
                 </div>
                 <div class="space-y-4">
-                  
                   <div class="js-animate js-from-up" style="transition-delay: 0.1s;">
                     <details class="group border border-amber-100 rounded-lg overflow-hidden hover:border-amber-300 transition-colors content-block-hover">
                         <summary class="flex cursor-pointer items-center justify-between bg-gray-50 px-6 py-4 font-semibold text-gray-900 hover:bg-amber-50 transition-colors">
@@ -406,85 +365,98 @@
 
       </main>
       
-      <!-- Footer will be injected here -->
       <div id="footer-placeholder"></div>
       
     </div>
     
-    <!-- Page-specific script -->
     <script>
-        // --- Scroll Animation Logic (from home) ---
-        
+        // --- Scroll Animation Logic ---
         function setupIntersectionObserver() {
             const observerOptions = {
                 root: null,
-                rootMargin: '0px 0px -50px 0px', // Trigger when 50px of the element is visible
+                rootMargin: '0px 0px -50px 0px',
                 threshold: 0.1 
             };
 
             const observer = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     const target = entry.target;
-                    
                     if (entry.isIntersecting) {
                         const delay = parseFloat(target.style.transitionDelay || 0) * 1000;
-                        
                         setTimeout(() => {
                             target.classList.add('js-in-view'); 
                         }, delay);
-
-                        // Stop observing once animated
                         observer.unobserve(target);
                     }
                 });
             }, observerOptions);
 
-            // Observe all elements with .js-animate
-            // This will run on window.onload and find the injected elements
             document.querySelectorAll('.js-animate').forEach(el => observer.observe(el));
-            
-            // Observe all card elements
             document.querySelectorAll('.js-card-animate').forEach(el => {
                 el.classList.add('js-animate', 'js-from-up'); 
                 observer.observe(el);
             });
         }
-
-        // Run animation setup on window load (to ensure layout.js has injected content)
         window.onload = setupIntersectionObserver;
 
 
-        // --- Page-Specific Logic for Contact Form & FAQ (from contact) ---
-        
+        // --- Contact Form Logic (UPDATED to save to database) ---
         document.addEventListener('DOMContentLoaded', () => {
             
-            // NOTE: Hover effects are now CSS-driven, but we keep logic for form and FAQ
-            
-            // 1. Handle Form Submission
             const form = document.getElementById('contactForm');
             const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('submitBtn');
             
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
-                    console.log('Form submission intercepted. Data ready to be sent.');
-                    
-                    if (successMessage) {
-                        successMessage.classList.remove('hidden');
-                    }
-                    
-                    form.reset(); 
+                    // Show Loading State
+                    submitBtn.innerText = "Sending...";
+                    submitBtn.disabled = true;
+                    successMessage.classList.add('hidden');
+                    errorMessage.classList.add('hidden');
 
-                    setTimeout(() => {
-                        if (successMessage) {
-                            successMessage.classList.add('hidden');
+                    const formData = new FormData(form);
+
+                    // Send Data to Django View using Fetch
+                    fetch("{% url 'contact_submit' %}", {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
-                    }, 5000);
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            successMessage.classList.remove('hidden');
+                            form.reset();
+                        } else {
+                            errorMessage.classList.remove('hidden');
+                            console.error('Submission Error:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        errorMessage.classList.remove('hidden');
+                        console.error('Network Error:', error);
+                    })
+                    .finally(() => {
+                        // Reset Button
+                        submitBtn.innerText = "Send Message";
+                        submitBtn.disabled = false;
+                        
+                        // Hide success message after 5 seconds
+                        setTimeout(() => {
+                            successMessage.classList.add('hidden');
+                            errorMessage.classList.add('hidden');
+                        }, 5000);
+                    });
                 });
             }
 
-            // 2. Smooth Accordion/FAQ Animation
+            // --- FAQ Accordion Logic ---
             document.querySelectorAll('details').forEach(details => {
                 const contentWrapper = details.querySelector('[data-content-wrapper]');
                 if (!contentWrapper) return;
@@ -512,9 +484,7 @@
                         });
                         
                         contentWrapper.ontransitionend = () => {
-                            if (details.open) {
-                                contentWrapper.style.height = 'auto';
-                            }
+                            if (details.open) contentWrapper.style.height = 'auto';
                             contentWrapper.ontransitionend = null;
                         };
 
@@ -537,22 +507,16 @@
                 });
             });
 
-            // 3. Create Icons (from module)
-            // This needs to wait for the module to load
+            // 3. Create Icons
             setTimeout(() => {
                 if (typeof createIcons === 'function') {
-                    createIcons({
-                        icons: {
-                            Phone, Mail, MapPin, Clock
-                        }
-                    });
+                    createIcons({ icons: { Phone, Mail, MapPin, Clock } });
                 }
             }, 0);
         });
 
     </script>
 
-    <!-- Shared layout script -->
     <script src="{% static 'css/layout.js' %}" defer></script>
   </body>
 </html>

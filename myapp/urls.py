@@ -15,6 +15,7 @@ urlpatterns = [
     path('dashboard/', views.owner_dashboard_view, name='owner_dashboard'),
     path('order/<int:order_id>/update-status/', views.update_order_status,name='update_order_status'),
     path('booking/<int:booking_id>/update-status/',views.update_booking_status,name='update_booking_status'),
+    path('contact/submit/', views.contact_submit, name='contact_submit'),
     path('about', views.about, name='about'),
     path('contact', views.contact, name='contact'),
     path('rooms', views.rooms, name='rooms'),

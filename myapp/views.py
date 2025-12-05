@@ -2,15 +2,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.shortcuts import render ,redirect, get_object_or_404
-from django.http import HttpResponse
-from.models import hotel
-from .models import RoomBooking, FoodOrder # Add FoodOrder to your imports
 import datetime
 import json # Import the json library
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.conf import settings  # <-- ADD THIS
 import os                      # <-- ADD THIS
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST
+from .models import RoomBooking, FoodOrder, ContactMessage # Updated imports
+import json
 
 # ... (all your other imports: render, redirect, EmailMessage, BytesIO, pisa, etc.) ...
 
@@ -115,21 +117,6 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
     return redirect('home') # Redirect to home page after logout
-
-
-def customer(request):
-    if request.method=='POST':
-        c_name=request.POST['customerName']
-        c_address=request.POST['customerAddress']
-        c_contact=request.POST['customerContact']
-        if c_name and c_address and c_contact:
-            newhotel=hotel.objects.create(name=c_name,address=c_address,contact=c_contact)
-            newhotel.save()
-            return redirect('customer')
-    else:
-        data=hotel.objects.all()
-        return render(request, 'customer.html',{'show':data})
-    
 
 
 
@@ -444,3 +431,19 @@ def render_to_pdf(template_src, context_dict={}):
     # If there's an error, print it to your console
     print(f"PDF Generation Error: {pdf.err}")
     return None
+# --- NEW: Handle Contact Form Submission ---
+@require_POST
+@csrf_protect
+def contact_submit(request):
+    try:
+        # Save to Database using request.POST (FormData)
+        ContactMessage.objects.create(
+            name=request.POST.get('name'),
+            email=request.POST.get('email'),
+            phone=request.POST.get('phone'),
+            subject=request.POST.get('subject'),
+            message=request.POST.get('message')
+        )
+        return JsonResponse({'status': 'success', 'message': 'Message sent successfully!'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)

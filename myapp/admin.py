@@ -1,24 +1,25 @@
 from django.contrib import admin
-
-# Register your models here.
-from .models import hotel
-# admin.site.register(hotel)
-
-from .models import hotel, RoomBooking, FoodOrder
+from .models import RoomBooking, FoodOrder, ContactMessage # Removed hotel
 
 # Customize how RoomBookings are displayed
 class RoomBookingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'room_type', 'check_in', 'check_out', 'guests')
-    list_filter = ('room_type', 'check_in')
+    list_display = ('name', 'room_type', 'check_in', 'check_out', 'guests', 'status')
+    list_filter = ('room_type', 'check_in', 'status')
     search_fields = ('name', 'email', 'phone')
 
 # Customize how FoodOrders are displayed
 class FoodOrderAdmin(admin.ModelAdmin):
-    list_display = ('customer_name', 'order_date', 'order_time', 'total_cost')
-    list_filter = ('order_date',)
+    list_display = ('customer_name', 'order_date', 'order_time', 'total_cost', 'status')
+    list_filter = ('order_date', 'status')
     search_fields = ('customer_name', 'phone_number')
 
-# Register your models with the admin site
-admin.site.register(hotel)
+# Customize Contact Messages
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'subject', 'email', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('name', 'email', 'subject')
+
+# Register your models
 admin.site.register(RoomBooking, RoomBookingAdmin)
 admin.site.register(FoodOrder, FoodOrderAdmin)
+admin.site.register(ContactMessage, ContactMessageAdmin) # Added this
