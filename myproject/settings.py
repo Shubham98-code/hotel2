@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'anymail',  # <--- Make sure this is added
 ]
 
 MIDDLEWARE = [
@@ -118,9 +119,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- EMAIL CONFIGURATION (Updated for Render) ---
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "anymail.backends.elasticemail.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'
-
+ANYMAIL = {
+    "ELASTICEMAIL_API_KEY": config('ELASTICEMAIL_API_KEY'),
+}
+# IMPORTANT: This email must be verified in your Elastic Email dashboard
+DEFAULT_FROM_EMAIL = "sg8900083@gmail.com"
+SERVER_EMAIL = "sg8900083@gmail.com"
 # Change to Port 465 and SSL
 EMAIL_PORT = 465
 EMAIL_USE_TLS = False  # Turn this OFF
