@@ -1,12 +1,12 @@
 """
 Django settings for myproject project.
-Updated for Railway Deployment & Security.
+Updated for Render Deployment & Security.
 """
 
 from pathlib import Path
 import os
 from decouple import config, Csv
-import dj_database_url  # Needed for Railway Database
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,11 +17,18 @@ SECRET_KEY = config('SECRET_KEY')
 # cast=bool converts "False" string to actual Python False
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-# Allow Railway domains
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='127.0.0.1,localhost')
+# --- HOSTS & CSRF SECURITY (Updated for Render) ---
+# 1. ALLOWED_HOSTS: Add your Render URL here
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='127.0.0.1,localhost,hotel2-rmec.onrender.com')
 
-# CSRF Trusted Origins (Required for Railway's HTTPS proxy)
+# 2. CSRF TRUSTED ORIGINS: Required for Forms/Login to work on Render
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=Csv(), default='http://127.0.0.1')
+CSRF_TRUSTED_ORIGINS.append('https://hotel2-rmec.onrender.com')
+
+# 3. SSL/Proxy Headers (Trust Render's secure connection)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 INSTALLED_APPS = [
@@ -40,14 +47,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 ]
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # REQUIRED for Railway CSS
+    'whitenoise.middleware.WhiteNoiseMiddleware', # REQUIRED for Static Files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,13 +80,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # --- DATABASE CONFIGURATION ---
-# This automatically switches between SQLite (Local) and Postgres (Railway)
+# Checks for DATABASE_URL env var (Provided by Render), otherwise falls back to SQLite
 DATABASES = {
     'default': dj_database_url.config(
         default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
         conn_max_age=600
     )
 }
+
+# --- AUTHENTICATION ---
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -103,53 +111,32 @@ USE_TZ = True
 # --- STATIC FILES (CSS/JS) ---
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where files are collected for production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+# WhiteNoise Storage (Updated to Manifest storage for better caching)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# settings.py
-
-# --- EMAIL CONFIGURATION (Gmail Fix) ---
+# --- EMAIL CONFIGURATION ---
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-
-# CHANGE THESE 3 LINES:
-EMAIL_PORT = 587               # Switch from 465 to 587
-EMAIL_USE_TLS = True           # Turn ON TLS
-EMAIL_USE_SSL = False          # Turn OFF SSL (Important!)
-
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = 10
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-# --- LOGIN / ALLAUTH SETTINGS ---
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
-SITE_ID = 1
 
 # --- LOGIN / ALLAUTH SETTINGS ---
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 SITE_ID = 1
 
-# 1. How users log in (Use Email, not Username)
 ACCOUNT_LOGIN_METHODS = {'email'}
-
-# 2. REQUIRED: Define the signup fields explicitly
-# The asterisk (*) is CRITICAL here. It tells Django "This field is mandatory".
-ACCOUNT_SIGNUP_FIELDS = [
-    'email*', 
-    # You can add 'first_name' or 'last_name' here if you want them
-]
-
-# 3. Email Verification
+ACCOUNT_SIGNUP_FIELDS = ['email*'] 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory' 
 
-# 4. REMOVE these lines if they still exist in your file:
-# ACCOUNT_EMAIL_REQUIRED = True      <-- DELETE THIS
-# ACCOUNT_USERNAME_REQUIRED = False  <-- DELETE THIS
-# ACCOUNT_AUTHENTICATION_METHOD = ... <-- DELETE THIS
 # Social account providers
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -162,17 +149,3 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 SOCIALACCOUNT_LOGIN_ON_GET = True
-# --- FIX FOR RAILWAY ADMIN LOADING ---
-
-# 1. Trust the secure connection from Railway
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# 2. Trust your specific domain for forms (CSRF)
-# Use your exact Railway URL here (make sure to include https://)
-CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-74395.up.railway.app',
-]
-
-# 3. Ensure cookies are sent securely
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
