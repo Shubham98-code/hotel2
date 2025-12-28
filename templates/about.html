@@ -49,10 +49,10 @@
           transform: translate(0, 0);
       }
       
-      /* Global Hover/Tap effects from home */
+      /* Global Hover/Tap effects from home
       .js-interactive {
           transition: transform 0.3s ease-out, box-shadow 0.3s, background-color 0.3s, filter 0.3s;
-      }
+      } */
       
       .card-hover-transform {
            transition: transform 0.3s ease-out, box-shadow 0.3s, border-color 0.3s !important;
@@ -76,42 +76,9 @@
       
       /* --- End Animations from home --- */
       
-      /* Base Container Setup */
-      .section-container {
-        position: relative;
-        z-index: 1; 
-      }
 
-      /* Hover Effect for general content blocks (Mission/Vision wrappers, Commitment, Footer) */
-      .content-block-hover {
-        /* Base transition for smooth scale and shadow */
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 1; /* Default state for layering */
-        position: relative; /* Needed for z-index to work */
-      }
-      .content-block-hover:hover {
-        /* Apply a slight scale (pop effect) and enhance shadow */
-        transform: scale(1.02); 
-        box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 6px 8px -3px rgba(0, 0, 0, 0.1);
-        z-index: 10; /* Bring element forward slightly on hover */
-      }
 
-      /* Existing Card Hover (Smaller, for grid items: Achievements, Why Guests Love Us) */
-      .card-hover {
-        transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-      }
-      .card-hover:hover {
-        /* This is the smaller, vertical lift effect */
-        transform: translateY(-8px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-      }
-      .img-hover-scale {
-        transition: transform 0.3s ease-in-out;
-      }
-      .img-hover-scale:hover {
-        transform: scale(1.05);
-      }
-      
+    
       /* Keyframes for smooth mobile menu transition (Added from home) */
       @keyframes slideInDown {
           from { opacity: 0; transform: translateY(-10px); }

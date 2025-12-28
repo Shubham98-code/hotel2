@@ -34,23 +34,11 @@
             opacity: 1;
         }
         
-        /* Base Container Setup (Needed for Footer Integration) */
+        /* Base Container Setup (Needed for Footer Integration)
         .section-container {
           position: relative;
           z-index: 1; 
-        }
-
-        /* Hover Effect for general content blocks (Needed for Footer Integration) */
-        .content-block-hover {
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          z-index: 1;
-          position: relative;
-        }
-        .content-block-hover:hover {
-          transform: scale(1.02); 
-          box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 6px 8px -3px rgba(0, 0, 0, 0.1);
-          z-index: 10;
-        }
+        } */
 
         /* --- Hover/Modal Effects --- */
         .card-hover-effect {
@@ -207,11 +195,48 @@
 
     <script>
         // --- Data Definitions (unchanged) ---
+        // --- Data Definitions (Updated) ---
         const ROOMS_DATA = [
-            { id: 1, name: "Deluxe Room", price: 5000, image: "/static/css/delux.jpg", description: "Perfectly appointed with modern amenities and comfort for a pleasant stay.", capacity: "2 Guests", size: "350 sq ft", features: ["King-size Bed", "Air Conditioning", "32-inch Flat-screen TV", "Mini Bar", "High-speed WiFi", "Work Desk", "Rain Shower", "24/7 Room Service"] },
-            { id: 2, name: "Premium Suite", price: 8000, image: "/static/css/premium.jpg", description: "Spacious suite with separate living area and premium amenities.", capacity: "2-4 Guests", size: "550 sq ft", features: ["2 Double Beds", "Separate Living Area", "Full Kitchen", "Luxury Bathroom", "Balcony with City View", "High-speed WiFi", "Premium Toiletries", "Concierge Service"] },
-            { id: 3, name: "Royal Suite", price: 12000, image: "/static/css/king.jpg", description: "Ultimate luxury with exclusive amenities and personalized service.", capacity: "2-4 Guests", size: "750 sq ft", features: ["King Suite Bed", "Separate Living & Dining", "Premium Kitchen", "Spa Bathroom", "Large Balcony", "Butler Service", "Personalized Service", "VIP Parking"] },
-            { id: 4, name: "Family Room", price: 7000, image: "/static/css/family.jpg", description: "Perfect for families with multiple sleeping areas and entertainment.", capacity: "4-6 Guests", size: "600 sq ft", features: ["2 Double Beds + 1 Single", "Living Area", "Kids' Entertainment", "Full Bathroom", "Kitchenette", "High-speed WiFi", "Game Console", "Room Service"] }
+            { 
+                id: 1, 
+                name: "Single Bed Room", 
+                price: "500/day", 
+                image: "/static/css/single.png", // Using existing image as placeholder
+                description: "A cozy and efficient space designed perfectly for the solo traveler.", 
+                capacity: "1 Guest", 
+                size: "250 sq ft", 
+                features: ["Single Bed", "High-speed WiFi", "Work Desk", "Air Conditioning", "Room Service"] 
+            },
+            { 
+                id: 2, 
+                name: "Double Bed Room", 
+                price: "1200/day", 
+                image: "/static/css/double_bed.png", 
+                description: "Spacious comfort with a large bed, ideal for couples or pairs.", 
+                capacity: "2 Guests", 
+                size: "400 sq ft", 
+                features: ["double_size Bed", "City View", "Mini Fridge", "Flat-screen TV", "Air Conditioning"] 
+            },
+            { 
+                id: 3, 
+                name: "Dormitory", 
+                price: "300/day", 
+                image: "/static/css/dormatery.jpeg", 
+                description: "Budget-friendly shared accommodation, perfect for groups and backpackers.", 
+                capacity: "4-6 Guests", 
+                size: "600 sq ft", 
+                features: ["Bunk Beds", "Personal Lockers", "Shared Lounge", "Reading Lights", "WiFi"] 
+            },
+            { 
+                id: 4, 
+                name: "Custom Occasion Room", 
+                price: "statrting from../2000", 
+                image: "/static/css/custom.png", 
+                description: "Specially decorated rooms tailored for birthdays, anniversaries, and celebrations.", 
+                capacity: "2-4 Guests", 
+                size: "500 sq ft", 
+                features: ["Themed Decoration", "Cake/Flowers (On Request)", "Mood Lighting", "Music System", "Premium Service"] 
+            }
         ];
 
         const AMENITIES_DATA = [
